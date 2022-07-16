@@ -9,6 +9,7 @@ much more efficiently.
 Install dependencies:
 ```bash
 shards install
+```
 
 Build by running:
 ```bash
