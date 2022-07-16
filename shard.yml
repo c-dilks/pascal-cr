@@ -1,0 +1,9 @@
+name: pascal-cr
+version: 0.1.0
+
+authors:
+  - Christopher Dilks
+
+dependencies:
+  celestine:
+    github: celestinecr/celestine

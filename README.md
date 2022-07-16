@@ -6,8 +6,9 @@ The goal is to reproduce [images like these](https://github.com/c-dilks/pascal/t
 much more efficiently.
 
 ## Usage
-Build by running:
+Install dependencies and build by running:
 ```
+shards install
 ./build.cr
 ```
 

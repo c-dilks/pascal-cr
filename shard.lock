@@ -1,0 +1,10 @@
+version: 2.0
+shards:
+  celestine:
+    git: https://github.com/celestinecr/celestine.git
+    version: 0.8.3alpha+git.commit.75f1b0dc5b636df995e71a89a176dbf88fb64c71
+
+  myhtml:
+    git: https://github.com/kostya/myhtml.git
+    version: 1.5.8
+
