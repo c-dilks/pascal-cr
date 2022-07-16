@@ -13,14 +13,21 @@ Install dependencies:
 shards install
 ```
 
-Build by running:
+Build by running one of the following:
 ```bash
 ./build.cr                        # standard build
 ./build.cr --release              # optimized build
-crystal run src/run.cr -- [args]  # build and run `pascal` with args (for devs)
+crystal run src/run.cr -- [args]  # build and run `pascal` with paramters `[args]`
 ```
 
 To generate triangles, run:
 ```bash
-./pascal
+./pascal [NUM_ROWS] [MOD] [SEED]
 ```
+where
+- `[NUM_ROWS]` is the number of rows
+- `[MODULUS]` is the modulus, where each number `N` is drawn with a color
+  representing `N.modulo [MODULUS]`
+- `[SEED]` is the number in the first row (typically 1)
+
+The output will be an SVG file, openable in a web browser, for example
