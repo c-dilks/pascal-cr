@@ -6,13 +6,18 @@ The goal is to reproduce [images like these](https://github.com/c-dilks/pascal/t
 much more efficiently.
 
 ## Usage
-Install dependencies and build by running:
-```
+Install dependencies:
+```bash
 shards install
-./build.cr
+
+Build by running:
+```bash
+./build.cr                        # standard build
+./build.cr --release              # optimized build
+crystal run src/run.cr -- [args]  # build and run `pascal` with args (for devs)
 ```
 
 To generate triangles, run:
-```
+```bash
 ./pascal
 ```
