@@ -6,9 +6,13 @@ module Pascal
   # store one row of the pascal triangle
   class Row
     getter nums, mods
+    DRAW_SIZE = 5
 
-    def initialize(@nums : Array(BigInt) = [BigInt.new 1])
-      @mods = @nums
+    def initialize(
+      @nums : Array(BigInt) = [BigInt.new 1], # initial row
+      @rowNumMax : Int64 = 0,                 # maximum row (for drawing; if zero, draw left-aligned)
+    )
+      @mods   = @nums
       @rowNum = 0
     end
 
@@ -29,21 +33,24 @@ module Pascal
       self.modify do |num| num.modulo m end
     end
 
-    # output method sandbox
+    # text output
     def output(stream=STDOUT)
-      stream = STDOUT # force stdout
       stream.puts @nums
       # stream.puts @mods
     end
 
-    # drawing sandbox
+    # svg output
     def draw(ctx)
-      @nums.each_with_index do |num,i|
-        r = Celestine::Rectangle.new
-        r.x = i
-        r.y = @rowNum
-        r.fill = "red"
-        ctx << r
+      @mods.each_with_index do |num,colNum|
+        ctx.rectangle do |rec|
+          offset     = ( @rowNumMax - @rowNum ) / 2
+          rec.x      = ( offset + colNum ) * DRAW_SIZE
+          rec.y      = @rowNum * DRAW_SIZE
+          rec.width  = DRAW_SIZE
+          rec.height = DRAW_SIZE
+          rec.fill   = "##{num}#{num}#{num}"
+          rec
+        end
       end
     end
 
