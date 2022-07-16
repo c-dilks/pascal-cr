@@ -8,12 +8,17 @@ SEED = ( ARGV[2]? || 1 ).to_i  # number in first row
 p! ITER, MOD, SEED
 
 # execution
-outFile = File.new("output.txt","w")
-row = Pascal::Row.new [BigInt.new SEED]
-row.output outFile
-ITER.times do |i|
-  row.next
-  row.modulo MOD
-  row.output outFile
+# outFile = File.new("output.txt","w")
+outFile = File.new("output.svg","w")
+svg = Celestine.draw do |ctx|
+  row = Pascal::Row.new [BigInt.new SEED]
+  # row.output outFile
+  ITER.times do |i|
+    row.next
+    row.modulo MOD
+    # row.output outFile
+    row.draw ctx
+  end
 end
+outFile.puts svg
 outFile.close
