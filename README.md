@@ -1,3 +1,5 @@
+![pascal](/img/sample.png)
+
 # pascal-cr
 Pascal triangle visuals in [Crystal](https://crystal-lang.org/)
 
