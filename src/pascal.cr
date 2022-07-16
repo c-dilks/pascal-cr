@@ -6,7 +6,7 @@ module Pascal
   # store one row of the pascal triangle
   class Row
     getter nums, mods
-    DRAW_SIZE = 5
+    DRAW_SIZE = 1
 
     def initialize(
       @nums : Array(BigInt) = [BigInt.new 1], # initial row
