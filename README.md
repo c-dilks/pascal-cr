@@ -28,3 +28,5 @@ To generate triangles, run:
 ./pascal     # run with default options
 ./pascal -h  # show usage guide
 ```
+
+View output SVG files in a browser, or Eye of GNOME (`eog`), for example
