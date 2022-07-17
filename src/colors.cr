@@ -9,7 +9,7 @@ module Colors
       @numMin = 0
       @numMax = 1
 
-      # linear interpolated gradients
+      # linearly interpolated gradients
       @gradient["grayscale"] = self.lerp [0x00,0x00,0x00], [0xFF,0xFF,0xFF]
       @gradient["red"]       = self.lerp [0x00,0x00,0x00], [0xFF,0x00,0x00]
       @gradient["green"]     = self.lerp [0x00,0x00,0x00], [0x00,0xFF,0x00]
@@ -215,7 +215,6 @@ module Colors
         colorI = colorLerp[2] + (colorLerp[1]<<8) + (colorLerp[0]<<16)
         colorHex = colorI.to_s(16)
         (6-colorHex.size).times do colorHex="0"+colorHex end
-        # colors << "#"+colorHex
         "#"+colorHex
       end.to_a
     end
