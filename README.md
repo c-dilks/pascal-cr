@@ -25,12 +25,6 @@ crystal run src/run.cr -- [args]  # build and run `pascal` with paramters `[args
 ## Usage
 To generate triangles, run:
 ```bash
-./pascal [NUM_ROWS] [MOD] [SEED]
+./pascal     # run with default options
+./pascal -h  # show usage guide
 ```
-where
-- `[NUM_ROWS]` is the number of rows
-- `[MODULUS]` is the modulus, where each number `N` is drawn with a color
-  representing `N.modulo [MODULUS]`
-- `[SEED]` is the number in the first row (typically 1)
-
-The output will be an SVG file, openable in a web browser, for example
