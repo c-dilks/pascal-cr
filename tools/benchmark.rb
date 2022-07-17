@@ -4,7 +4,8 @@
 require 'awesome_print'
 require 'open3'
 
-system "./build.rb --release"
+# settings
+timeCmd = `which time`.chomp
 
 # list of `pascal` jobs and their arguments to run
 benchmarks = [
@@ -14,11 +15,21 @@ benchmarks = [
   { :args=>[ 3000, 3  ] },
 ]
 
+####################################################
+
+# build
+success = system "./build.rb --release"
+exit 1 if not success
+
 # run benchmarks
+puts "\nrunning benchmarks".upcase
 benchmarks.each do |benchmark|
 
   # run
-  cmd = "time -v ./pascal #{benchmark[:args].join ' '}"
+  cmd = [
+    "#{timeCmd} -v",
+    "./pascal #{benchmark[:args].join ' '}",
+  ].join ' '
   ap cmd
   outs, errs, status = Open3.capture3(cmd)
 
@@ -27,6 +38,7 @@ benchmarks.each do |benchmark|
     .split(/\n/)
     .map{ |line| line.gsub(/^\t/,'') }
 end
+puts "done running benchmarks\n".upcase
 
 # print
 ap benchmarks

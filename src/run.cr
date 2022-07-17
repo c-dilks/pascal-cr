@@ -2,7 +2,7 @@
 require "./pascal"
 
 # arguments
-NUM_ROWS = ( ARGV[0]? || 100 ).to_i # number of rows
+NUM_ROWS = ( ARGV[0]? || 100 ).to_i # number of rows to generate
 MODULUS  = ( ARGV[1]? || 9   ).to_i # modulus
 SEED     = ( ARGV[2]? || 1   ).to_i # number in first row
 p! NUM_ROWS, MODULUS, SEED
@@ -17,19 +17,19 @@ outSvg  = File.new("output.svg","w") if OUTPUT_SVG
 svg = Celestine.draw do |ctx|
 
   # start the triangle, given a seed row (default is `[1]`)
-  row = Pascal::Row.new [BigInt.new SEED], NUM_ROWS
+  triangle = Pascal::Row.new [BigInt.new SEED]
 
   # output proc
   output = -> {
-    row.output outFile.as(File) if OUTPUT_TXT
-    row.draw ctx if OUTPUT_SVG
+    triangle.output outFile.as(File) if OUTPUT_TXT
+    triangle.draw ctx, NUM_ROWS+1 if OUTPUT_SVG
   }
   output.call # output seed row
 
   # loop over rows
   NUM_ROWS.times do |i|
-    row.next
-    row.modulo MODULUS
+    triangle.next
+    triangle.modulo MODULUS
     output.call
   end
 

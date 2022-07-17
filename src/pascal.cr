@@ -10,7 +10,6 @@ module Pascal
 
     def initialize(
       @nums : Array(BigInt) = [BigInt.new 1], # initial row
-      @rowNumMax : Int64 = 0,                 # maximum row (for drawing; if zero, draw left-aligned)
     )
       @mods   = @nums
       @rowNum = 0
@@ -40,10 +39,10 @@ module Pascal
     end
 
     # svg output
-    def draw(ctx)
+    def draw(ctx,rowNumMax)
       @mods.each_with_index do |num,colNum|
         ctx.rectangle do |rec|
-          offset     = ( @rowNumMax - @rowNum ) / 2
+          offset     = ( rowNumMax - @rowNum ) / 2
           rec.x      = ( offset + colNum ) * DRAW_SIZE
           rec.y      = @rowNum * DRAW_SIZE
           rec.width  = DRAW_SIZE
@@ -54,6 +53,6 @@ module Pascal
       end
     end
 
-  end
+  end # Pascal::Row
 
-end
+end # Pascal
