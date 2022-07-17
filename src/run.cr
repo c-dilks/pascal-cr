@@ -9,7 +9,7 @@ seed       = [BigInt.new 1]
 outBN      = "output"
 outDir     = "out"
 outFormats = [ :txt, :svg ]
-drawSize   = 1.0
+drawSize   = 2.0
 
 # internal settings
 outMode   = outFormats.map{ |ext| [ext,false] }.to_h
@@ -77,7 +77,7 @@ svg = Celestine.draw do |ctx|
   # output proc
   output = -> {
     triangle.output outTxt.as(File) if outMode[:txt]
-    triangle.draw ctx, numRows+1 if outMode[:svg]
+    triangle.draw ctx, numRows+1, 0, modulus-1 if outMode[:svg]
   }
   output.call # output seed row
 

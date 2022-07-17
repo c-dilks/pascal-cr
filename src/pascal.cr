@@ -39,8 +39,26 @@ module Pascal
       # stream.puts @mods
     end
 
+    # color interpolator
+    def colorize(num)
+      # color1 = [ 0,   0,   0   ]
+      # color2 = [ 255, 255, 255 ]
+      color1 = [ 10, 0,   0   ]
+      color2 = [ 0,  255, 255 ]
+      colorLerp = color1.zip(color2).map do |c1,c2|
+        c = c1+(c2-c1)*num
+        c.to_i
+      end
+      colorI = colorLerp[2] + (colorLerp[1]<<8) + (colorLerp[0]<<16)
+      colorHex = colorI.to_s(16)
+      (6-colorHex.size).times do colorHex="0"+colorHex end
+      colorHex = "#"+colorHex
+      # puts "#{num} to #{colorHex}"
+      colorHex
+    end
+
     # svg output
-    def draw(ctx,rowNumMax)
+    def draw(ctx,rowNumMax,numMin,numMax)
       @mods.each_with_index do |num,colNum|
         ctx.rectangle do |rec|
           offset     = ( rowNumMax - @rowNum ) / 2
@@ -48,7 +66,7 @@ module Pascal
           rec.y      = @rowNum * @drawSize
           rec.width  = @drawSize
           rec.height = @drawSize
-          rec.fill   = "##{num}#{num}#{num}"
+          rec.fill   = self.colorize (num-numMin)/(numMax-numMin)
           rec
         end
       end
