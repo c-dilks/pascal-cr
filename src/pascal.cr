@@ -53,6 +53,9 @@ module Pascal
       end
     end
 
+    # macros
+    def_clone
+
   end # Pascal::Row
 
 end # Pascal
