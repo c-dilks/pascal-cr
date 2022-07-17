@@ -4,6 +4,9 @@
 require 'awesome_print'
 require 'open3'
 
+# arguments
+N_WORKERS = ARGV[0].nil? ? 8 : ARGV[0] # number of workers
+
 # settings
 timeCmd = `which time`.chomp
 
@@ -27,7 +30,7 @@ benchmarks.each do |benchmark|
 
   # run
   cmd = [
-    "#{timeCmd} -v",
+    "CRYSTAL_WORKERS=#{N_WORKERS} #{timeCmd} -v",
     "./pascal #{benchmark[:args].join ' '}",
   ].join ' '
   ap cmd

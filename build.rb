@@ -6,6 +6,7 @@ buildCommand = [
   "crystal build",
   ARGV.size>0 ? ARGV.join(' ') : "",
   "-o #{target}",
+  "-Dpreview_mt",
   "src/run.cr",
 ].join " "
 
