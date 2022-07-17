@@ -1,4 +1,4 @@
-#!/usr/bin/env crystal
+#!/usr/bin/env ruby
 
 target = "pascal"
 
@@ -9,6 +9,7 @@ buildCommand = [
   "src/run.cr",
 ].join " "
 
-p! buildCommand, target
+puts "buildCommand => #{buildCommand}"
+puts "target       => #{target}"
 success = system buildCommand
 puts "=> build #{success ? "successful" : "failed"}"
