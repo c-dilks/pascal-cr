@@ -9,7 +9,8 @@ seed       = [BigInt.new 1]
 outBN      = "output"
 outDir     = "out"
 outFormats = [ :txt, :svg ]
-drawSize   = 1.0
+drawSize   = 2.0
+colormap   = "heatmap"
 
 # internal settings
 outMode   = outFormats.map{ |ext| [ext,false] }.to_h
@@ -47,8 +48,10 @@ OptionParser.parse do |p|
   end
   p.separator sep
   p.separator "draw settings:"
-  p.on "-d SIZE", "--draw-size SIZE", "size of each drawn SVG element" { |n| drawSize = n.to_f }
-  p.separator
+  p.on "-d SIZE",     "--draw-size SIZE", "size of each drawn SVG element" { |n| drawSize = n.to_f }
+  p.on "-c COLORMAP", "--color COLORMAP", "palette color map"              { |s| colormap = s      }
+  p.separator "     > available COLORMAPs:"
+  p.separator Colors::Palette.new.help
 end
 
 # post-parse settings
@@ -58,7 +61,7 @@ outMode[:svg] = true if outMode.values.find{|v|v}.nil?
 # print settings
 puts sep
 puts "settings".upcase
-p! numRows, modulus, seed, outName, outMode, drawSize
+p! numRows, modulus, seed, outName, outMode, drawSize, colormap
 puts sep
 exit if stopEarly
 
@@ -71,21 +74,23 @@ outSvg = File.new("#{outName}.svg","w") if outMode[:svg]
 svg = Celestine.draw do |ctx|
 
   # start the triangle, given a seed row (default is `[1]`)
-  triangle = Pascal::Row.new seed
+  triangle = Pascal::Row.new numRows, seed
   triangle.drawSize = drawSize
+  triangle.palette.set_gradient colormap
+  triangle.palette.set_range 0, modulus-1
 
   # output proc
-  output = -> {
+  produce = -> {
+    triangle.modulo modulus
     triangle.output outTxt.as(File) if outMode[:txt]
-    triangle.draw ctx, numRows+1 if outMode[:svg]
+    triangle.draw ctx if outMode[:svg]
   }
-  output.call # output seed row
+  produce.call # seed row
 
   # loop over rows
   numRows.times do |i|
     triangle.next
-    triangle.modulo modulus
-    output.call
+    produce.call
   end
 
 end

@@ -1,19 +1,22 @@
 require "big"
 require "celestine"
+require "./colors"
 
 module Pascal
 
   # store one row of the pascal triangle
   class Row
     getter nums, mods
-    property drawSize
+    property drawSize, palette, rowNumMax
 
     def initialize(
-      @nums : Array(BigInt) = [BigInt.new 1], # initial row
+      @rowNumMax : Int128,                    # maximum number of rows
+      @nums : Array(BigInt) = [BigInt.new 1]  # initial row
     )
       @mods     = @nums
       @rowNum   = 0
       @drawSize = 1.0
+      @palette  = Colors::Palette.new
     end
 
     # compute the next row of the triangle
@@ -40,15 +43,15 @@ module Pascal
     end
 
     # svg output
-    def draw(ctx,rowNumMax)
+    def draw(ctx)
       @mods.each_with_index do |num,colNum|
         ctx.rectangle do |rec|
-          offset     = ( rowNumMax - @rowNum ) / 2
+          offset     = ( @rowNumMax - @rowNum ) / 2
           rec.x      = ( offset + colNum ) * @drawSize
           rec.y      = @rowNum * @drawSize
           rec.width  = @drawSize
           rec.height = @drawSize
-          rec.fill   = "##{num}#{num}#{num}"
+          rec.fill   = @palette.colorize num
           rec
         end
       end
