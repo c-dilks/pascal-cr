@@ -6,13 +6,14 @@ module Pascal
   # store one row of the pascal triangle
   class Row
     getter nums, mods
-    DRAW_SIZE = 1
+    property drawSize
 
     def initialize(
       @nums : Array(BigInt) = [BigInt.new 1], # initial row
     )
-      @mods   = @nums
-      @rowNum = 0
+      @mods     = @nums
+      @rowNum   = 0
+      @drawSize = 1.0
     end
 
     # compute the next row of the triangle
@@ -43,10 +44,10 @@ module Pascal
       @mods.each_with_index do |num,colNum|
         ctx.rectangle do |rec|
           offset     = ( rowNumMax - @rowNum ) / 2
-          rec.x      = ( offset + colNum ) * DRAW_SIZE
-          rec.y      = @rowNum * DRAW_SIZE
-          rec.width  = DRAW_SIZE
-          rec.height = DRAW_SIZE
+          rec.x      = ( offset + colNum ) * @drawSize
+          rec.y      = @rowNum * @drawSize
+          rec.width  = @drawSize
+          rec.height = @drawSize
           rec.fill   = "##{num}#{num}#{num}"
           rec
         end

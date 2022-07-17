@@ -9,10 +9,10 @@ timeCmd = `which time`.chomp
 
 # list of `pascal` jobs and their arguments to run
 benchmarks = [
-  { :args=>[ 100,  7  ] },
-  { :args=>[ 1000, 11 ] },
-  { :args=>[ 2000, 9  ] },
-  { :args=>[ 3000, 3  ] },
+  { :args=>[ "-n 100",  "-m 7"  ] },
+  { :args=>[ "-n 1000", "-m 11" ] },
+  { :args=>[ "-n 2000", "-m 9"  ] },
+  { :args=>[ "-n 3000", "-m 3"  ] },
 ]
 
 ####################################################

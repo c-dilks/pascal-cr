@@ -1,35 +1,90 @@
 # generate pascal triangle
 require "./pascal"
+require "option_parser"
 
-# arguments
-NUM_ROWS = ( ARGV[0]? || 100 ).to_i # number of rows to generate
-MODULUS  = ( ARGV[1]? || 9   ).to_i # modulus
-SEED     = ( ARGV[2]? || 1   ).to_i # number in first row
-p! NUM_ROWS, MODULUS, SEED
+# default settings
+numRows    = 17*17
+modulus    = 17
+seed       = [BigInt.new 1]
+outBN      = "output"
+outDir     = "out"
+outFormats = [ :txt, :svg ]
+drawSize   = 1.0
 
-# settings
-OUTPUT_TXT = false
-OUTPUT_SVG = true
+# internal settings
+outMode   = outFormats.map{ |ext| [ext,false] }.to_h
+sep       = "-"*60
+stopEarly = false
+
+# parse options
+OptionParser.parse do |p|
+  p.banner =  "
+               +=========================+
+              / Pascal Triangle Generator \\
+             +=============================+
+  "
+  p.on "-h", "--help", "show help" do
+    puts p
+    exit
+  end
+  p.on "-H", "--dump", "show all settings and exit" { stopEarly = true }
+  p.separator sep
+  p.separator "generator settings:"
+  p.on "-n NUM_ROWS", "number of rows to generate" { |n| numRows = n.to_i }
+  p.on "-m MODULUS",  "modulus"                    { |n| modulus = n.to_i }
+  p.on "-s SEED", "seed row number(s), e.g., `-s 1,2,3`" do |s|
+    seed = s.split(',').map{ |n| BigInt.new n }
+  end
+  p.separator sep
+  p.separator "output file directory and filename prefix:"
+  p.on "--outdir OUTDIR", "output directory"     { |s| outDir = s.gsub(/\/$/,"") }
+  p.on "--prefix PREFIX", "output file basename" { |s| outBN  = s               }
+  p.separator sep
+  p.separator "output formats:"
+  p.separator "If you choose none, an SVG file will be produced"
+  outFormats.each do |ext|
+    p.on "--#{ext.to_s}", "enable #{ext.to_s.upcase} output" { outMode[ext] = true }
+  end
+  p.separator sep
+  p.separator "draw settings:"
+  p.on "-d SIZE", "--draw-size SIZE", "size of each drawn SVG element" { |n| drawSize = n.to_f }
+  p.separator
+end
+
+# post-parse settings
+outName = [outDir,outBN].join '/'
+outMode[:svg] = true if outMode.values.find{|v|v}.nil?
+
+# print settings
+puts sep
+puts "settings".upcase
+p! numRows, modulus, seed, outName, outMode, drawSize
+puts sep
+exit if stopEarly
+
+# open output files
+Dir.mkdir outDir unless Dir.exists? outDir
+outTxt = File.new("#{outName}.txt","w") if outMode[:txt]
+outSvg = File.new("#{outName}.svg","w") if outMode[:svg]
 
 # execution ---------------------------------------------------
-outFile = File.new("output.txt","w") if OUTPUT_TXT
-outSvg  = File.new("output.svg","w") if OUTPUT_SVG
 svg = Celestine.draw do |ctx|
 
   # start the triangle, given a seed row (default is `[1]`)
-  triangle = Pascal::Row.new [BigInt.new SEED]
+  triangle = Pascal::Row.new seed
+  triangle.drawSize = drawSize
 
   # output proc
   output = -> {
-    triangle.output outFile.as(File) if OUTPUT_TXT
-    triangle.draw ctx, NUM_ROWS+1 if OUTPUT_SVG
+    triangle.output outTxt.as(File) if outMode[:txt]
+    triangle.draw ctx, numRows+1 if outMode[:svg]
   }
   output.call # output seed row
 
   # loop over rows
-  NUM_ROWS.times do |i|
+  numRows.times do |i|
     triangle.next
-    triangle.modulo MODULUS
+    triangle.modulo modulus
     output.call
   end
 
@@ -37,12 +92,12 @@ end
 
 # cleanup -----------------------------------------------------
 puts "\nOUTPUTS:"
-if OUTPUT_TXT
-  p! outFile
-  outFile.as(File).close
+if outMode[:txt]
+  puts "#{outName}.txt"
+  outTxt.as(File).close
 end
-if OUTPUT_SVG
+if outMode[:svg]
   outSvg.as(File).puts svg
-  p! outSvg
+  puts "#{outName}.svg"
   outSvg.as(File).close
 end
