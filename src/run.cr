@@ -13,7 +13,6 @@ OUTPUT_SVG = true
 CONCURRENT_BUFFER_SIZE = 1
 
 # execution ---------------------------------------------------
-# channel = Channel(Pascal::Row).new(CONCURRENT_BUFFER_SIZE)
 channel = Array(Channel(Pascal::Row)).new(NUM_ROWS)
 done    = Array(Channel(Nil)).new(NUM_ROWS)
 mutex   = Mutex.new
