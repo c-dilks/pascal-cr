@@ -18,10 +18,10 @@ module Colors
       @gradient["magenta"]   = self.lerp 0x000000, 0xFF00FF
       @gradient["yellow"]    = self.lerp 0x000000, 0xFFFF00
 
-      @gradient["warm"]      = self.lerp_sequence [ 0x702A8C, 0xBF2669, 0xFF194D, 0xFF7326, 0xFFCC0D ]
-      @gradient["lava"]      = self.lerp_sequence [ 0x1E1E20, 0x2A2C2B, 0x374140, 0xD9CB9E, 0xDC3522 ]
-      @gradient["water"]     = self.lerp_sequence [ 0x1E1E20, 0x2A2C2B, 0x374140, 0xD9CB9E, 0x22ACDC ]
-      @gradient["rainbow"]   = self.lerp_sequence [ 0xFA233E, 0xFFA15C, 0xF5EB67, 0x44D492, 0x88F7E2 ]
+      @gradient["warm"]      = self.lerp_sequence 0x702A8C, 0xBF2669, 0xFF194D, 0xFF7326, 0xFFCC0D
+      @gradient["lava"]      = self.lerp_sequence 0x1E1E20, 0x2A2C2B, 0x374140, 0xD9CB9E, 0xDC3522
+      @gradient["water"]     = self.lerp_sequence 0x1E1E20, 0x2A2C2B, 0x374140, 0xD9CB9E, 0x22ACDC
+      @gradient["rainbow"]   = self.lerp_sequence 0xFA233E, 0xFFA15C, 0xF5EB67, 0x44D492, 0x88F7E2
 
       # default
       @colormap = @gradient["grayscale"]
@@ -80,7 +80,7 @@ module Colors
       color1rgb = decode.call color1
       color2rgb = decode.call color2
       size.times.map do |i|
-        frac = i.to_f / size.to_f
+        frac = i.to_f / (size-1).to_f
         colorLerp = color1rgb.zip(color2rgb).map do |c1,c2|
           ( c1+(c2-c1)*frac ).to_i
         end
@@ -92,7 +92,7 @@ module Colors
     end
 
     # run `lerp` multiple times to generate a full palette
-    def lerp_sequence( colors=[0x000000,0xFFFFFF], size=256 )
+    def lerp_sequence( *colors, size=256 )
       sequence = Array(String).new
       colors[0..-2].each_with_index do |color,i|
         sequence += self.lerp color, colors[i+1], size
