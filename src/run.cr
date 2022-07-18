@@ -10,7 +10,7 @@ outBN      = "output"
 outDir     = "out"
 outFormats = [ :txt, :svg ]
 drawSize   = 2.0
-colormap   = "heatmap"
+colormap   = "lava"
 
 # internal settings
 outMode   = outFormats.map{ |ext| [ext,false] }.to_h
