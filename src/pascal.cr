@@ -11,7 +11,8 @@ module Pascal
 
     def initialize(
       @rowNumMax : Int128,                    # maximum number of rows
-      @nums : Array(BigInt) = [BigInt.new 1]  # initial row
+      @nums : Array(BigInt) = [BigInt.new 1], # initial row elements
+      @beginRow : Int128 = 0,                 # initial row number
     )
       @mods     = @nums
       @rowNum   = 0
@@ -46,9 +47,9 @@ module Pascal
     def draw(ctx)
       @mods.each_with_index do |num,colNum|
         ctx.rectangle do |rec|
-          offset     = ( @rowNumMax - @rowNum ) / 2
+          offset     = ( @rowNumMax - @rowNum + @beginRow ) / 2
           rec.x      = ( offset + colNum ) * @drawSize
-          rec.y      = @rowNum * @drawSize
+          rec.y      = ( @rowNum - @beginRow) * @drawSize
           rec.width  = @drawSize
           rec.height = @drawSize
           rec.fill   = @palette.colorize num

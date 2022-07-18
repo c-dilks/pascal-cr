@@ -6,6 +6,7 @@ require "option_parser"
 numRows    = 17*17
 modulus    = 17
 seed       = [BigInt.new 1]
+beginRow   = 0
 outBN      = "output"
 outDir     = "out"
 outFormats = [ :txt, :svg ]
@@ -36,6 +37,7 @@ OptionParser.parse do |p|
   p.on "-s SEED", "seed row number(s), e.g., `-s 1,2,3`" do |s|
     seed = s.split(',').map{ |n| BigInt.new n }
   end
+  p.on "-b BEGINROW",  "row number to begin output on" { |n| beginRow = n.to_i }
   p.separator sep
   p.separator "output file directory and filename prefix:"
   p.on "--outdir OUTDIR", "output directory"     { |s| outDir = s.gsub(/\/$/,"") }
@@ -61,7 +63,7 @@ outMode[:svg] = true if outMode.values.find{|v|v}.nil?
 # print settings
 puts sep
 puts "settings".upcase
-p! numRows, modulus, seed, outName, outMode, drawSize, colormap
+p! numRows, modulus, seed, beginRow, outName, outMode, drawSize, colormap
 puts sep
 exit if stopEarly
 
@@ -74,10 +76,13 @@ outSvg = File.new("#{outName}.svg","w") if outMode[:svg]
 svg = Celestine.draw do |ctx|
 
   # start the triangle, given a seed row (default is `[1]`)
-  triangle = Pascal::Row.new numRows, seed
+  triangle = Pascal::Row.new numRows, seed, beginRow
   triangle.drawSize = drawSize
   triangle.palette.set_gradient colormap
   triangle.palette.set_range 0, modulus-1
+
+  # skip to row number `beginRow`
+  beginRow.times.each do triangle.next end
 
   # output proc
   produce = -> {
