@@ -3,9 +3,9 @@ require "./generator"
 module MathGen
 
   # store one row of the pascal triangle
-  class PascalTriangle < Generator
+  class Pascal < Generator
     getter nums, mods
-    property rowNumMax
+    property rowNumMax, mod_function_update_mode
 
     def initialize(
       @rowNumMax : Int128,                    # maximum number of rows
@@ -14,6 +14,7 @@ module MathGen
     )
       @mods   = @nums
       @rowNum = 0
+      @mod_function_update_mode = "none"
       super()
     end
 
@@ -23,10 +24,19 @@ module MathGen
       @rowNum += 1
     end
 
-    # run a calculation on a row's `@nums`;
-    # the result is stored in `@mods`
-    def modify(*args)
-      @mods = modulo @nums, *args
+    # run a calculation on a row's `@nums`, store results in `@mods`
+    def modify
+      @mod_function = self.mod_function_update
+      @mods = super @nums
+    end
+
+    # update a modifier function
+    def mod_function_update
+      case @mod_function_update_mode
+      when "modulo_row"
+        @mod_function = modulo(@rowNum+1)
+      end
+      @mod_function
     end
 
     # text output
