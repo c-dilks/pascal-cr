@@ -2,7 +2,7 @@ require "big"
 require "celestine"
 require "../colors"
 
-module MathGen
+module Mathographix
 
   alias ModProc = BigInt -> BigInt
 

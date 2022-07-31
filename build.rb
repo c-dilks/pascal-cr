@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-target = "pascal"
+target = "math"
 
 buildCommand = [
   "crystal build",

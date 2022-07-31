@@ -1,6 +1,6 @@
 # generate pascal triangle
 require "option_parser"
-require "./mathgen/*"
+require "./generators/*"
 
 # default settings
 generator_type = "pascal"
@@ -23,9 +23,9 @@ stopEarly = false
 # parse options
 OptionParser.parse do |p|
   p.banner =  "
-               +=======+
-              / MathGen \\
-             +===========+
+               +============+
+              / Mathographix \\
+             +================+
   "
   p.on "-h", "--help", "show help" do
     puts p
@@ -77,7 +77,7 @@ outSvg = File.new("#{outName}.svg","w") if outMode[:svg]
 # set generator
 case generator_type
 when "pascal"
-  gen = MathGen::Pascal.new numRows, seed, beginRow
+  gen = Mathographix::Pascal.new numRows, seed, beginRow
 else
   STDERR.puts "ERROR: unknown generator type '#{generator_type}'"
   exit 1

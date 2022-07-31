@@ -1,6 +1,6 @@
 require "./generator"
 
-module MathGen
+module Mathographix
 
   # store one row of the pascal triangle
   class Pascal < Generator

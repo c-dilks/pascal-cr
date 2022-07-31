@@ -4,7 +4,9 @@
 require 'awesome_print'
 require 'open3'
 
-# list of `pascal` jobs and their arguments to run
+Exe = './math'
+
+# list of jobs and their arguments to run
 benchmarks = [
   { :args=>[ "-n 100",  "-m 7"  ] },
   { :args=>[ "-n 1000", "-m 11" ] },
@@ -23,7 +25,7 @@ puts "\nrunning benchmarks".upcase
 benchmarks.each do |benchmark|
 
   # run
-  cmd = "./pascal #{benchmark[:args].join ' '}"
+  cmd = "#{Exe} #{benchmark[:args].join ' '}"
   ap cmd
   time_start = Time.now
   outs, errs, status = Open3.capture3(cmd)
