@@ -4,9 +4,6 @@
 require 'awesome_print'
 require 'open3'
 
-# settings
-timeCmd = `which time`.chomp
-
 # list of `pascal` jobs and their arguments to run
 benchmarks = [
   { :args=>[ "-n 100",  "-m 7"  ] },
@@ -26,17 +23,13 @@ puts "\nrunning benchmarks".upcase
 benchmarks.each do |benchmark|
 
   # run
-  cmd = [
-    "#{timeCmd} -v",
-    "./pascal #{benchmark[:args].join ' '}",
-  ].join ' '
+  cmd = "./pascal #{benchmark[:args].join ' '}"
   ap cmd
+  time_start = Time.now
   outs, errs, status = Open3.capture3(cmd)
+  time_stop = Time.now
+  benchmark[:time] = time_stop - time_start
 
-  # `time` outputs to `stderr`
-  benchmark[:time] = errs
-    .split(/\n/)
-    .map{ |line| line.gsub(/^\t/,'') }
 end
 puts "done running benchmarks\n".upcase
 
