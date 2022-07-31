@@ -1,23 +1,21 @@
-require "big"
-require "celestine"
-require "./colors"
+require "./generator"
 
-module Pascal
+module MathGen
 
   # store one row of the pascal triangle
-  class Row
+  class Pascal < Generator
     getter nums, mods
-    property drawSize, palette, rowNumMax
+    property rowNumMax, mod_function_update_mode
 
     def initialize(
       @rowNumMax : Int128,                    # maximum number of rows
       @nums : Array(BigInt) = [BigInt.new 1], # initial row elements
       @beginRow : Int128 = 0,                 # initial row number
     )
-      @mods     = @nums
-      @rowNum   = 0
-      @drawSize = 1.0
-      @palette  = Colors::Palette.new
+      @mods   = @nums
+      @rowNum = 0
+      @mod_function_update_mode = "none"
+      super()
     end
 
     # compute the next row of the triangle
@@ -26,15 +24,19 @@ module Pascal
       @rowNum += 1
     end
 
-    # run a calculation on a row's `@nums`;
-    # the result is stored in `@mods`
+    # run a calculation on a row's `@nums`, store results in `@mods`
     def modify
-      @mods = @nums.map do |num| yield num end
+      @mod_function = self.mod_function_update
+      @mods = super @nums
     end
 
-    # set `@mods` to be `@nums modulo m`
-    def modulo(m)
-      self.modify do |num| num.modulo m end
+    # update a modifier function
+    def mod_function_update
+      case @mod_function_update_mode
+      when "modulo_row"
+        @mod_function = modulo(@rowNum+1)
+      end
+      @mod_function
     end
 
     # text output
@@ -58,6 +60,5 @@ module Pascal
       end
     end
 
-  end # Pascal::Row
-
-end # Pascal
+  end
+end

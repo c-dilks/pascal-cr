@@ -1,8 +1,10 @@
 # generate pascal triangle
-require "./pascal"
 require "option_parser"
+require "./mathgen/*"
 
 # default settings
+generator_type = "pascal"
+mod_function = "modulo"
 numRows    = 17*17
 modulus    = 17
 seed       = [BigInt.new 1]
@@ -21,9 +23,9 @@ stopEarly = false
 # parse options
 OptionParser.parse do |p|
   p.banner =  "
-               +=========================+
-              / Pascal Triangle Generator \\
-             +=============================+
+               +=======+
+              / MathGen \\
+             +===========+
   "
   p.on "-h", "--help", "show help" do
     puts p
@@ -72,29 +74,53 @@ Dir.mkdir outDir unless Dir.exists? outDir
 outTxt = File.new("#{outName}.txt","w") if outMode[:txt]
 outSvg = File.new("#{outName}.svg","w") if outMode[:svg]
 
+# set generator
+case generator_type
+when "pascal"
+  gen = MathGen::Pascal.new numRows, seed, beginRow
+else
+  STDERR.puts "ERROR: unknown generator type '#{generator_type}'"
+  exit 1
+end
+
+# set modifier
+palette_range_min = 0
+palette_range_max = 1
+case mod_function
+when "modulo"
+  gen.mod_function = gen.modulo(modulus)
+  palette_range_max = modulus
+when "modulo_row"
+  gen.mod_function = gen.modulo(modulus)
+  gen.mod_function_update_mode = "modulo_row"
+  palette_range_max = numRows
+else
+  STDERR.puts "ERROR: unknown modifier function '#{mod_function}'; using default"
+end
+
+
 # execution ---------------------------------------------------
 svg = Celestine.draw do |ctx|
 
-  # start the triangle, given a seed row (default is `[1]`)
-  triangle = Pascal::Row.new numRows, seed, beginRow
-  triangle.drawSize = drawSize
-  triangle.palette.set_gradient colormap
-  triangle.palette.set_range 0, modulus-1
+  # common generator settings
+  gen.drawSize = drawSize
+  gen.palette.set_gradient colormap
+  gen.palette.set_range palette_range_min, palette_range_max
 
   # skip to row number `beginRow`
-  beginRow.times.each do triangle.next end
+  beginRow.times.each do gen.next end
 
   # output proc
   produce = -> {
-    triangle.modulo modulus
-    triangle.output outTxt.as(File) if outMode[:txt]
-    triangle.draw ctx if outMode[:svg]
+    gen.modify
+    gen.output outTxt.as(File) if outMode[:txt]
+    gen.draw ctx if outMode[:svg]
   }
   produce.call # seed row
 
   # loop over rows
   numRows.times do |i|
-    triangle.next
+    gen.next
     produce.call
   end
 

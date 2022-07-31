@@ -19,7 +19,7 @@ Build by running one of the following:
 ```bash
 ./build.rb                        # standard build
 ./build.rb --release              # optimized build
-crystal run src/run.cr -- [args]  # build and run `pascal` with paramters `[args]`
+crystal run src/app.cr -- [args]  # build and run `pascal` with paramters `[args]`
 ```
 
 ## Usage
