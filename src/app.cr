@@ -76,7 +76,7 @@ outSvg = File.new("#{outName}.svg","w") if outMode[:svg]
 svg = Celestine.draw do |ctx|
 
   # start the triangle, given a seed row (default is `[1]`)
-  triangle = Pascal::Row.new numRows, seed, beginRow
+  triangle = MathGen::PascalTriangle.new numRows, seed, beginRow
   triangle.drawSize = drawSize
   triangle.palette.set_gradient colormap
   triangle.palette.set_range 0, modulus-1
@@ -86,7 +86,7 @@ svg = Celestine.draw do |ctx|
 
   # output proc
   produce = -> {
-    triangle.modulo modulus
+    triangle.modify modulus
     triangle.output outTxt.as(File) if outMode[:txt]
     triangle.draw ctx if outMode[:svg]
   }
