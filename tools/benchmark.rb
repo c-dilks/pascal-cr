@@ -8,10 +8,10 @@ Exe = './math'
 
 # list of jobs and their arguments to run
 benchmarks = [
-  { :args=>[ "-n 100",  "-m 7"  ] },
-  { :args=>[ "-n 1000", "-m 11" ] },
-  { :args=>[ "-n 2000", "-m 9"  ] },
-  { :args=>[ "-n 3000", "-m 3"  ] },
+  { :args=>[ "pascal", "-n 100",  "-m 7"  ] },
+  { :args=>[ "pascal", "-n 1000", "-m 11" ] },
+  { :args=>[ "pascal", "-n 2000", "-m 9"  ] },
+  { :args=>[ "pascal", "-n 3000", "-m 3"  ] },
 ]
 
 ####################################################

@@ -3,12 +3,6 @@ require "option_parser"
 require "./generators/*"
 
 # default settings
-generator_type = "pascal"
-mod_function = "modulo"
-numRows    = 17*17
-modulus    = 17
-seed       = [BigInt.new 1]
-beginRow   = 0
 outBN      = "output"
 outDir     = "out"
 outFormats = [ :txt, :svg ]
@@ -20,26 +14,50 @@ outMode   = outFormats.map{ |ext| [ext,false] }.to_h
 sep       = "-"*60
 stopEarly = false
 
+# list of supported generators
+gen_list = [
+  Mathographix::Pascal,
+]
+
+# modifiers (todo)
+modulus  = 17
+
 # parse options
+gen = Mathographix::Generator.new
 OptionParser.parse do |p|
   p.banner =  "
                +============+
               / Mathographix \\
              +================+
+
+  Usage: math [GENERATOR] [MODIFIER] [ARUMENTS]...
   "
   p.on "-h", "--help", "show help" do
     puts p
     exit
   end
-  p.on "-H", "--dump", "show all settings and exit" { stopEarly = true }
+  p.on "-D", "--dry-run", "dry run, just show all settings and exit" { stopEarly = true }
   p.separator sep
-  p.separator "generator settings:"
-  p.on "-n NUM_ROWS", "number of rows to generate" { |n| numRows = n.to_i }
-  p.on "-m MODULUS",  "modulus"                    { |n| modulus = n.to_i }
-  p.on "-s SEED", "seed row number(s), e.g., `-s 1,2,3`" do |s|
-    seed = s.split(',').map{ |n| BigInt.new n }
+
+  # generator subcommand
+  p.separator "[GENERATOR]: choose one of the following generators:"
+  gen_list.each do |gen_class|
+    p.on( gen_class.subcommand, gen_class.description) do
+      gen = gen_class.new
+      p.separator sep
+      p.separator "#{gen_class.description} OPTIONS:"
+      gen.options.each do |opt|
+        p.on(opt.short_flag, opt.long_flag, opt.description) { |s| opt.action.call(s) }
+      end
+    end
   end
-  p.on "-b BEGINROW",  "row number to begin output on" { |n| beginRow = n.to_i }
+  p.separator "NOTE: run `math [GENERATOR] -h` to show generator-specific options"
+  p.separator sep
+
+  # modifier subcommand (todo)
+  p.on "-m MODULUS",  "modulus"                    { |n| modulus = n.to_i }
+
+  # general options
   p.separator sep
   p.separator "output file directory and filename prefix:"
   p.on "--outdir OUTDIR", "output directory"     { |s| outDir = s.gsub(/\/$/,"") }
@@ -65,7 +83,9 @@ outMode[:svg] = true if outMode.values.find{|v|v}.nil?
 # print settings
 puts sep
 puts "settings".upcase
-p! numRows, modulus, seed, beginRow, outName, outMode, drawSize, colormap
+p! modulus, outName, outMode, drawSize, colormap
+puts sep
+gen.print_settings
 puts sep
 exit if stopEarly
 
@@ -74,26 +94,18 @@ Dir.mkdir outDir unless Dir.exists? outDir
 outTxt = File.new("#{outName}.txt","w") if outMode[:txt]
 outSvg = File.new("#{outName}.svg","w") if outMode[:svg]
 
-# set generator
-case generator_type
-when "pascal"
-  gen = Mathographix::Pascal.new numRows, seed, beginRow
-else
-  STDERR.puts "ERROR: unknown generator type '#{generator_type}'"
-  exit 1
-end
-
 # set modifier
 palette_range_min = 0
 palette_range_max = 1
+mod_function = "modulo"
 case mod_function
 when "modulo"
   gen.mod_function = gen.modulo(modulus)
   palette_range_max = modulus
 when "modulo_row"
   gen.mod_function = gen.modulo(modulus)
-  gen.mod_function_update_mode = "modulo_row"
-  palette_range_max = numRows
+  # gen.mod_function_update_mode = "modulo_row" # todo fix this
+  # palette_range_max = gen.size # todo fix this
 else
   STDERR.puts "ERROR: unknown modifier function '#{mod_function}'; using default"
 end
@@ -107,8 +119,8 @@ svg = Celestine.draw do |ctx|
   gen.palette.set_gradient colormap
   gen.palette.set_range palette_range_min, palette_range_max
 
-  # skip to row number `beginRow`
-  beginRow.times.each do gen.next end
+  # skip to iteration number `gen.first_iter`
+  gen.first_iter.times.each do gen.next end
 
   # output proc
   produce = -> {
@@ -116,10 +128,10 @@ svg = Celestine.draw do |ctx|
     gen.output outTxt.as(File) if outMode[:txt]
     gen.draw ctx if outMode[:svg]
   }
-  produce.call # seed row
+  produce.call
 
   # loop over rows
-  numRows.times do |i|
+  gen.size.times do |i|
     gen.next
     produce.call
   end
